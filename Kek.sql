@@ -71,8 +71,6 @@ create table credit_application(
     requested_term int,
     approved_term int,
     credit_id int,
-    foreign key(credit_id)
-    references credit(credit_id),
     disbursement_date date,
     borrower_id int,
     foreign key(borrower_id)
@@ -81,6 +79,7 @@ create table credit_application(
     foreign key(verificator_id)
     references verificators(verificator_id)
 );
+
 alter table credit
 add constraint fk foreign key(credit_application_id)
 references credit_application(credit_application_id);
@@ -157,6 +156,8 @@ insert into documents (document_id, type_of_document, document_issue_date, docum
 insert into documents (document_id, type_of_document, document_issue_date, document_valid_until) values (48, 'id', '31-Aug-2012', '24-Apr-2022');
 insert into documents (document_id, type_of_document, document_issue_date, document_valid_until) values (49, 'passport', '03-Jan-2011', '06-Oct-2021');
 insert into documents (document_id, type_of_document, document_issue_date, document_valid_until) values (50, 'passport', '05-Sep-2010', '01-Apr-2020');
+
+alter table borrower alter column education type varchar(100);
 
 insert into borrower (borrower_id, created_at, created_by, address, birth_date, children, document_id, education, phone, email, name, gender, marital_status, salary) values (1, '28-Jun-2011', 4, '4 Melvin Point', '05-Nov-1981', 2, 1, 'University of Zimbabwe', '146-420-9867', 'msanzio0@hhs.gov', 'Mufi Sanzio', true, 'married', 80000);
 insert into borrower (borrower_id, created_at, created_by, address, birth_date, children, document_id, education, phone, email, name, gender, marital_status, salary) values (2, '05-Oct-2013', 2, '82282 Dahle Junction', '03-Aug-1990', 0, 2, 'Ibaraki Christian College', '148-241-8804', 'ybussel1@vinaora.com', 'Yolanda Bussel', true, 'single', 85000);
@@ -370,3 +371,5 @@ insert into credit (credit_id, disbursement_date, product_id, amount, term, stat
 insert into credit (credit_id, disbursement_date, product_id, amount, term, status, borrower_id, credit_application_id, EIR) values (48, '10-Dec-2019', 4, 96000, 12, 'Active', 48, 108, 24.94);
 insert into credit (credit_id, disbursement_date, product_id, amount, term, status, borrower_id, credit_application_id, EIR) values (49, '09-Sep-2016', 4, 190000, 24, 'Expired', 49, 109, 23.07);
 insert into credit (credit_id, disbursement_date, product_id, amount, term, status, borrower_id, credit_application_id, EIR) values (50, '15-Sep-2018', 3, 215000, 24, 'Finished', 50, 110, 4.97);
+
+alter table credit_application add constraint credit_application_credit_id_fkey foreign key(credit_id) references credit(credit_id);
