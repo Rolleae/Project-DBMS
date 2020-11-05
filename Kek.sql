@@ -448,6 +448,30 @@ create index index_term
         term nulls last
 );
 ------------------------------------------------------------Procedures-----------------------------------------------------
+create or replace procedure change_borrower(
+   id int,
+   new_name varchar(30),
+   new_address varchar(40),
+   new_phone int
+)
+language plpgsql
+as $$
+begin
+    update borrower
+    set name = new_name
+    where borrower_id = id;
+
+    update borrower
+    set address = new_address
+    where borrower_id = id;
+
+    update borrower
+    set phone = new_phone
+    where borrower_id = id;
+
+    commit;
+end;$$;
+----------------------------------------------------------Functions---------------------------------------------------------
 
 
 
