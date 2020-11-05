@@ -373,3 +373,81 @@ insert into credit (credit_id, disbursement_date, product_id, amount, term, stat
 insert into credit (credit_id, disbursement_date, product_id, amount, term, status, borrower_id, credit_application_id, EIR) values (50, '15-Sep-2018', 3, 215000, 24, 'Finished', 50, 110, 4.97);
 
 alter table credit_application add constraint credit_application_credit_id_fkey foreign key(credit_id) references credit(credit_id);
+
+
+----------------------------------------------------Triggers---------------------------------------------------------------
+
+
+
+
+
+------------------------------------------------------Views----------------------------------------------------------------
+create or replace view v_borrower as (
+    select
+        borrower_id,
+        created_at,
+        created_by,
+        address,
+        birth_date,
+        children,
+        document_id,
+        education,
+        phone,
+        email,
+        name,
+        gender,
+        marital_status,
+        salary
+    from
+        borrower
+);
+
+create or replace view v_credit as (
+    select
+        credit_id,
+        disbursement_date,
+        product_id,
+        amount,
+        term,
+        status,
+        borrower_id,
+        credit_application_id,
+        EIR
+    from
+        credit
+);
+----------------------------------------------------------Indexes----------------------------------------------------------
+create index index_borrower_id
+    on borrower (
+        borrower_id
+);
+create index index_name
+    on borrower (
+        name
+);
+create index index_salary
+    on borrower (
+        salary nulls last
+);
+
+create index index_credit_application_id
+    on credit_application (
+        credit_application_id
+);
+
+create index index_credit_id
+    on credit (
+        credit_id
+);
+create index index_amount
+    on credit (
+        amount nulls last
+);
+create index index_term
+    on credit (
+        term nulls last
+);
+------------------------------------------------------------Procedures-----------------------------------------------------
+
+
+
