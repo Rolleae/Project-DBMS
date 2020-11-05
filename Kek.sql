@@ -377,11 +377,95 @@ alter table credit_application add constraint credit_application_credit_id_fkey 
 
 ----------------------------------------------------Triggers---------------------------------------------------------------
 
+create table borrower_name_changes (
+   id int generated always as identity ,
+   borrower_id int not null,
+   old_name varchar(40) not null,
+   new_name varchar(40) not null,
+   changed_on timestamp(6) not null
+);
 
+create or replace function log_name_changes()
+  returns trigger
+  language plpgsql
+  as
+$$
+begin
+	if new.name <> old.name then
+		 insert into borrower_name_changes(borrower_id,old_name, new_name, changed_on)
+		 VALUES(old.borrower_id,old.name, new.name, now());
+	end if;
 
+	return new;
+end;
+$$;
 
+create trigger name_changes
+  before update
+  on borrower
+  for each row
+  execute procedure log_name_changes();
+
+create table borrower_address_changes (
+   id int generated always as identity ,
+   borrower_id int not null,
+   old_address text not null,
+   new_address text not null,
+   changed_on timestamp(6) not null
+);
+
+create or replace function log_address_changes()
+  returns trigger
+  language plpgsql
+  as
+$$
+begin
+	if new.address <> old.address then
+		 insert into borrower_address_changes(borrower_id,old_address, new_address, changed_on)
+		 values (old.borrower_id,old.address, new.address, now());
+	end if;
+
+	return new;
+end;
+$$;
+
+create trigger address_changes
+  before update
+  on borrower
+  for each row
+  execute procedure log_address_changes();
+
+create table borrower_phone_changes (
+   id int generated always as identity ,
+   borrower_id int not null,
+   old_phone varchar(15) not null,
+   new_phone varchar(15) not null,
+   changed_on timestamp(6) not null
+);
+
+create or replace function log_phone_changes()
+  returns trigger
+  language plpgsql
+  as
+$$
+begin
+	if new.phone <> old.phone then
+		 insert into borrower_phone_changes(borrower_id,old_phone, new_phone, changed_on)
+		 values (old.borrower_id,old.phone, new.phone, now());
+	end if;
+
+	return new;
+end;
+$$;
+
+create trigger phone_changes
+  before update
+  on borrower
+  for each row
+  execute procedure log_phone_changes();
 
 ------------------------------------------------------Views----------------------------------------------------------------
+                 
 create or replace view v_borrower as (
     select
         borrower_id,
@@ -416,7 +500,9 @@ create or replace view v_credit as (
     from
         credit
 );
+                 
 ----------------------------------------------------------Indexes----------------------------------------------------------
+                 
 create index index_borrower_id
     on borrower (
         borrower_id
@@ -447,7 +533,9 @@ create index index_term
     on credit (
         term nulls last
 );
+                 
 ------------------------------------------------------------Procedures-----------------------------------------------------
+                 
 create or replace procedure change_borrower(
    id int,
    new_name varchar(30),
@@ -471,6 +559,7 @@ begin
 
     commit;
 end;$$;
+                 
 ----------------------------------------------------------Functions---------------------------------------------------------
 
 
