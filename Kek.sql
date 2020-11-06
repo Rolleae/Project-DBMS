@@ -503,9 +503,14 @@ create or replace view v_borrower as (
         name,
         gender,
         marital_status,
-        salary
+        salary,
+	amount,
+	term,
+	eir
     from
         borrower
+    inner join credit
+    on borrower.borrower_id = credit.borrower_id
 );
 
 create or replace view v_credit as (
