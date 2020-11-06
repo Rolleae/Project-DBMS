@@ -464,6 +464,28 @@ create trigger phone_changes
   for each row
   execute procedure log_phone_changes();
 
+----------------------------------------------------------Functions---------------------------------------------------------
+
+create or replace function monthly_payment(id int)
+returns int
+language plpgsql
+as
+    $$
+    declare
+        b_amount credit.amount%type;
+        b_term credit.term%type;
+        b_eir credit.eir%type;
+        begin
+        select amount,term,eir
+        into b_amount,b_term,b_eir
+        from credit
+        where credit_id = id;
+          if not found then raise 'Borrower with credit_id % not found', id;
+          end if;
+        return round(((((b_eir/12)/100)*(((b_eir/12)/100)+1)^b_term)/(((1+((b_eir/12)/100))^b_term)-1))*b_amount);
+    end;
+    $$;
+			 
 ------------------------------------------------------Views----------------------------------------------------------------
                  
 create or replace view v_borrower as (
@@ -560,7 +582,5 @@ begin
     commit;
 end;$$;
                  
-----------------------------------------------------------Functions---------------------------------------------------------
-
 
 
